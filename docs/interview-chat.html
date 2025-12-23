@@ -47,7 +47,8 @@
     }
 
     .interview-container {
-      width: 100%;
+      width: 600px;
+      min-width: 600px;
       max-width: 600px;
       background: #ffffff;
       border-radius: 1rem;
@@ -274,6 +275,9 @@
       }
       
       .interview-container {
+        width: 100%;
+        min-width: 100%;
+        max-width: 100%;
         border-radius: 0;
         height: 100vh;
         max-height: none;
@@ -341,6 +345,13 @@
         // n8n Chat Trigger webhook URL (WF-4.4b)
         const webhookUrl = 'https://qyrios.app.n8n.cloud/webhook/5dd0c38e-6c53-4d2d-a935-4886fffced31/chat';
 
+        // Build initial message with content summary
+        const initialMessages = [];
+        if (summary) {
+          initialMessages.push(`📄 *Om innehållet:*\n${summary}`);
+        }
+        initialMessages.push('👋 Skriv något för att starta intervjun!');
+
         createChat({
           webhookUrl: webhookUrl,
           target: '#n8n-chat',
@@ -348,7 +359,7 @@
           metadata: {
             recordId: recordId
           },
-          initialMessages: [],
+          initialMessages: initialMessages,
           showWelcomeScreen: false,
           i18n: {
             en: {
