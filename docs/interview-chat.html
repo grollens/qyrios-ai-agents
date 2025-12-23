@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Insight Interview</title>
+  <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
+  <style>
+    :root {
+      --chat--color-primary: #667eea;
+      --chat--color-primary-shade-50: #764ba2;
+      --chat--color-primary-shade-100: #5a67d8;
+      --chat--color-secondary: #1a1a2e;
+      --chat--color-secondary-shade-50: #16213e;
+      --chat--color-white: #ffffff;
+      --chat--color-light: #f7f8fc;
+      --chat--color-light-shade-50: #e4e6ef;
+      --chat--color-medium: #9ca3af;
+      --chat--color-dark: #1f2937;
+      --chat--color-disabled: #c3dafe;
+      --chat--color-typing: #9ca3af;
+      --chat--spacing: 1rem;
+      --chat--border-radius: 0.75rem;
+      --chat--transition-duration: 0.2s;
+      --chat--window-width: 100vw;
+      --chat--window-height: 100vh;
+      --chat--header-height: auto;
+      --chat--textarea-height: auto;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+    }
+
+    #n8n-chat {
+      width: 100%;
+      height: 100vh;
+    }
+
+    .error-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem;
+      text-align: center;
+      color: #ffffff;
+    }
+
+    .error-container h1 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: #f87171;
+    }
+
+    .error-container p {
+      color: #9ca3af;
+      max-width: 400px;
+      line-height: 1.6;
+    }
+
+    .loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      color: #ffffff;
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255,255,255,0.2);
+      border-top-color: #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading p {
+      margin-top: 1rem;
+      color: #9ca3af;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="loading">
+      <div class="loading-spinner"></div>
+      <p>Laddar intervjun...</p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
+
+    const app = document.getElementById('app');
+
+    // Get recordId from URL query parameter
+    const params = new URLSearchParams(window.location.search);
+    const recordId = params.get('recordId');
+
+    if (!recordId) {
+      app.innerHTML = `
+        <div class="error-container">
+          <h1>Saknar innehålls-ID</h1>
+          <p>Ingen recordId hittades i URL:en. Vänligen öppna denna sida via länken du fick i Slack.</p>
+        </div>
+      `;
+    } else {
+      // Clear loading and create chat container
+      app.innerHTML = '<div id="n8n-chat"></div>';
+
+      try {
+        // n8n Chat Trigger webhook URL (WF-4.4b)
+        const webhookUrl = 'https://qyrios.app.n8n.cloud/webhook/5dd0c38e-6c53-4d2d-a935-4886fffced31/chat';
+
+        createChat({
+          webhookUrl: webhookUrl,
+          target: '#n8n-chat',
+          mode: 'fullscreen',
+          metadata: {
+            recordId: recordId
+          },
+          initialMessages: [
+            'Välkommen till Insight Interview! 💬',
+            'Jag hämtar information om ditt innehåll och förbereder intervjun...'
+          ],
+          i18n: {
+            en: {
+              title: 'Insight Interview',
+              subtitle: 'Konversationell intervju för innehållsinsikter',
+              inputPlaceholder: 'Skriv ditt svar här...',
+              getStarted: 'Börja intervjun',
+              closeButtonTooltip: 'Stäng'
+            }
+          }
+        });
+
+        console.log('Chat initialized with recordId:', recordId);
+      } catch (error) {
+        console.error('Failed to initialize chat:', error);
+        app.innerHTML = `
+          <div class="error-container">
+            <h1>Kunde inte ladda chatten</h1>
+            <p>Ett fel uppstod: ${error.message}</p>
+            <p>Försök ladda om sidan eller kontakta support.</p>
+          </div>
+        `;
+      }
+    }
+  </script>
+</body>
+</html>
+
