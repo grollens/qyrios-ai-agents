@@ -285,10 +285,10 @@
         // n8n Chat Trigger webhook URL (WF-4.4b)
         const webhookUrl = 'https://qyrios.app.n8n.cloud/webhook/5dd0c38e-6c53-4d2d-a935-4886fffced31/chat';
 
-        // Build context-aware initial message
-        const initialMessage = summary 
-          ? `Hej! Jag ser att du har skapat innehåll om "${title}". ${summary.length > 100 ? summary.substring(0, 100) + '...' : summary} Låt oss prata om dina tankar och erfarenheter kring detta!`
-          : `Hej! Jag ser att du har skapat innehåll om "${title}". Låt mig ställa några frågor om dina tankar och erfarenheter kring detta ämne.`;
+        // Build context message for the user
+        const contextMessage = summary 
+          ? `📄 **Om innehållet:** ${summary}`
+          : `📄 Intervju om: ${title}`;
 
         createChat({
           webhookUrl: webhookUrl,
@@ -297,13 +297,16 @@
           metadata: {
             recordId: recordId
           },
-          initialMessages: [],
+          initialMessages: [
+            contextMessage,
+            '💬 Skriv "hej" eller tryck på skicka-knappen för att starta intervjun!'
+          ],
           i18n: {
             en: {
               title: '',
               subtitle: '',
               inputPlaceholder: 'Skriv ditt svar här...',
-              getStarted: 'Börja intervjun',
+              getStarted: 'Starta',
               closeButtonTooltip: 'Stäng'
             }
           }
