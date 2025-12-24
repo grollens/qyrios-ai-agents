@@ -26,11 +26,12 @@
 
 | Funktion | Workflow | Beskrivning |
 |----------|----------|-------------|
-| **Dynamisk Nyhetsbevakning** | WF-4.1 | Automatiserad insamling från källor definierade i Airtable |
-| **Innehållsberikning** | WF-4.4 | Insight Gathering: manuell trigger via statusändring, konversationell chat-intervju |
-| **Innehållsproduktion** | WF-4.2 | Helautomatiserad generering av textutkast och bilder |
-| **Prestandaanalys & Trendspaning** | WF-4.3 | Automatisk uppdatering av data och strategisk analys |
-| **Coachning & Lärande** | WF-4.3 | Kvalitativ analys av feedback |
+| **Dynamisk Nyhetsbevakning** | CE-1.0 | Automatiserad insamling från källor definierade i Airtable |
+| **Snabb-input** | CE-1.1 | Quick Draft: skapa innehåll direkt från Slack |
+| **Innehållsberikning** | CE-2.x | Insight Gathering: konversationell chat-intervju |
+| **Innehållsproduktion** | CE-3.0 | Helautomatiserad generering av textutkast och bilder |
+| **Prestandaanalys & Trendspaning** | CE-4.x | Automatisk uppdatering av data och strategisk analys |
+| **Coachning & Lärande** | CE-5.0 | Kvalitativ analys av feedback |
 
 ### Utanför ramen (Out-of-Scope)
 
@@ -114,11 +115,21 @@ Att producera relevant och engagerande innehåll på en konsekvent basis är tid
 
 ## Workflows
 
-### WF-4.1: News Filtering Engine ("News Editor")
+### Namnkonvention
+
+**Format**: `CE-X.Y` där:
+- **CE** = Content Engine
+- **X** = Fas (1=Input, 2=Enrichment, 3=Production, 4=Analysis, 5=Learning, 9=Utility)
+- **Y** = Workflow inom fasen
+
+---
+
+### CE-1.0: News Editor
 
 **Agent**: News Analyser  
 **Trigger**: Dagligen kl 05:00  
-**Status**: ✅ Production
+**Status**: ✅ Production  
+**n8n ID**: `xhrCoul7OWH796Kb`
 
 **Processflöde**:
 ```
@@ -130,58 +141,30 @@ Beslut (Idea Backlog/Refuserad) → Rapport till Slack
 
 ---
 
-### WF-4.2: Content Production Engine ("Content Producer")
+### CE-1.1: Quick Draft
 
-**Agent**: Content Writer, Image Generator  
-**Trigger**: Varje timme (schemalagt)  
-**Status**: ✅ Production
+**Syfte**: Snabb skapande av utkast från Slack  
+**Trigger**: Slack-kommando  
+**Status**: ✅ Production  
+**n8n ID**: `QhTdveZN836tTp3W`
 
 **Processflöde**:
 ```
-Textgenerering (PersonalReflection/Nyheter) → 
-Bildgenerering → 
-Publicering (om datum passerat & Ready) → 
-Notis till Slack
+Slack Message/Command → Parse Content → 
+Create Airtable Record → Confirm in Slack
 ```
 
-**Använder**: Content (Airtable)
+**Använder**: Slack, Content (Airtable)
 
 ---
 
-### WF-4.3: Content Coach & Performance
-
-**Agent**: Strategy Analyst, Writing Coach  
-**Status**: ✅ Production
-
-#### 4.3.1 Qualitative Coaching
-- **Trigger**: Söndagar 10:00
-- **Process**: Jämför utkast med final text → Analyserar feedback → Skapar förslag i Suggested Improvements
-
-#### 4.3.2 Quantitative Strategy & Trend Scouting
-- **Workflow**: Performance Analyser
-- **Trigger**: Fredagar 02:00
-- **Process**: 
-  - Performance Analyser: Beräknar engagement score → Identifierar Top 10 → Spanar trender (Perplexity) → Matchar mot Backlog → Skickar veckorapport till Slack
-
-#### 4.3.3 LinkedIn Performance Retriever
-- **Workflow**: LinkedIn Performance Retriever (Data fetcher för WF-4.3.2)
-- **Trigger**: Fredagar 02:00 (körs före Performance Analyser)
-- **Process**: 
-  - Skrapar LinkedIn-statistik (Apify) → Uppdaterar Airtable med Reactions, Comments, Reposts
-
-**Använder**: Content, Content Feedback, Suggested Improvements (Airtable)
-
----
-
-### WF-4.4: Insight Gathering Engine
+### CE-2.0: Interview Trigger
 
 **Agent**: Insight Gatherer  
 **Trigger**: Statusändring till "💬 Interview" i Airtable  
-**Status**: ✅ Production (Konversationell chat via GitHub Pages)
+**Status**: ✅ Production  
+**n8n ID**: `0uivucNHZe4cXtxT`
 
-**Arkitektur**: Två workflows + custom chat-gränssnitt
-
-#### WF-4.4: Interview Trigger
 **Syfte**: Detekterar statusändring och skickar chat-länk till Slack
 
 **Processflöde**:
@@ -200,8 +183,14 @@ Innehåll: [titel]
 Börja den konversationella intervjun  ← klickbar länk
 ```
 
-#### WF-4.4b: Interview Chat
-**Syfte**: Backend för den konversationella intervjun
+---
+
+### CE-2.1: Interview Chat
+
+**Syfte**: Backend för den konversationella intervjun  
+**Trigger**: Chat webhook (från GitHub Pages)  
+**Status**: ✅ Production  
+**n8n ID**: `MH2X99khIhTvTa1R`
 
 **Processflöde**:
 ```
@@ -216,8 +205,101 @@ AI Interviewer Agent
   └─> Save Insights Tool (Airtable Tool)
 ```
 
-#### Chat-gränssnitt (GitHub Pages)
-**URL**: `https://grollens.github.io/qyrios-ai-agents/interview-chat.html`
+---
+
+### CE-3.0: Content Production
+
+**Agent**: Content Writer, Image Generator  
+**Trigger**: Varje timme (schemalagt)  
+**Status**: ✅ Production  
+**n8n ID**: `QT0qhhlrHwdW0Qc6`
+
+**Processflöde**:
+```
+Textgenerering (PersonalReflection/Nyheter) → 
+Bildgenerering → 
+Publicering (om datum passerat & Ready) → 
+Notis till Slack
+```
+
+**Använder**: Content (Airtable)
+
+---
+
+### CE-4.0: Performance Retriever
+
+**Syfte**: Hämtar LinkedIn-statistik (Data fetcher för CE-4.1)  
+**Trigger**: Fredagar 02:00  
+**Status**: ✅ Production  
+**n8n ID**: `QjdBaF25Bxnz1ulQ`
+
+**Processflöde**:
+```
+Skrapar LinkedIn-statistik (Apify) → 
+Uppdaterar Airtable med Reactions, Comments, Reposts
+```
+
+**Använder**: Apify, Content (Airtable)
+
+---
+
+### CE-4.1: Performance Analyser
+
+**Agent**: Strategy Analyst  
+**Trigger**: Fredagar 02:00 (efter CE-4.0)  
+**Status**: ✅ Production  
+**n8n ID**: `L69usft0w47kmOem`
+
+**Processflöde**:
+```
+Beräknar engagement score → Identifierar Top 10 → 
+Spanar trender (Perplexity) → Matchar mot Backlog → 
+Skickar veckorapport till Slack
+```
+
+**Använder**: Content, Content Feedback, Suggested Improvements (Airtable)
+
+---
+
+### CE-5.0: Content Coach
+
+**Agent**: Writing Coach  
+**Trigger**: Söndagar 10:00  
+**Status**: ✅ Production  
+**n8n ID**: `B7VQMNvOXmeaf6Gx`
+
+**Processflöde**:
+```
+Jämför utkast med final text → Analyserar feedback → 
+Skapar förslag i Suggested Improvements
+```
+
+**Använder**: Content, Content Feedback, Suggested Improvements (Airtable)
+
+---
+
+### CE-9.0: LinkedIn Backfill
+
+**Syfte**: Engångs-import av historiska LinkedIn-inlägg  
+**Trigger**: Manuell  
+**Status**: ✅ Production  
+**n8n ID**: `MSATKEg7V1JqySb0`
+
+**Processflöde**:
+```
+Manual Trigger → Fetch LinkedIn Posts (Apify) → 
+Split Posts → Extract Data → 
+Check Duplicates (fuzzy matching 80%) → 
+Create/Skip Records → Summary
+```
+
+**Använder**: Apify, Content (Airtable)
+
+---
+
+### Interview Chat-gränssnitt (GitHub Pages)
+
+**URL**: `https://grollens.github.io/qyrios-ai-agents/interview-chat.html`  
 **Fil**: `docs/interview-chat.html`
 
 **Design**:
@@ -227,7 +309,7 @@ AI Interviewer Agent
 - Fast bredd (600px desktop, 100% mobil)
 - Rensat från n8n:s default header
 
-**URL-parametrar** (skickas från WF-4.4):
+**URL-parametrar** (skickas från CE-2.0):
 - `recordId`: Airtable record ID (required)
 - `title`: Innehållets titel
 - `topic`: Ämne/kategori
@@ -255,77 +337,16 @@ AI Interviewer Agent
 
 ---
 
-### WF-4.7: LinkedIn Historical Posts Backfill
-
-**Purpose**: One-time workflow to import historical LinkedIn posts into Content Database for statistics and analysis  
-**Trigger**: Manual  
-**Status**: ✅ Implemented
-
-**Processflöde**:
-```
-Manual Trigger → 
-Fetch LinkedIn Posts (Apify) → 
-Get Dataset Items (Apify) → 
-Split Posts → 
-Extract Post Data → 
-Check Existing Posts by Date (Airtable) → 
-Fuzzy Text Matching (duplicate detection) → 
-Is Duplicate? (If node)
-  ├─→ [True/Duplicate] → Summary Results
-  └─→ [False/New] → Create Airtable Record → Summary Results
-```
-
-**Använder**: 
-- Apify (LinkedIn posts scraper)
-- Content (Airtable)
-
-**Funktioner**:
-- Intelligent duplicate detection using date filtering + fuzzy text matching (80% threshold)
-- Handles text differences between published posts and Airtable (user edits after publishing)
-- Extracts engagement metrics (reactions, comments, reposts, views)
-- Generates summary statistics (new posts added, duplicates skipped)
-
-**Notera**: 
-- One-time workflow for backfilling historical data
-- Uses fuzzy text matching on opening paragraph (first 250 chars) to handle minor edits
-- All imported posts have Status: "✅ Published"
-
----
-
-### WF-4.8: Create Draft from Slack
-
-**Purpose**: Quick draft creation from Slack messages  
-**Trigger**: Manual (Slack command or message)  
-**Status**: ✅ Production
-
-**Processflöde**:
-```
-Slack Message/Command → 
-Parse Content → 
-Create Airtable Record → 
-Confirm in Slack
-```
-
-**Använder**: 
-- Slack (input)
-- Content (Airtable)
-
-**Notera**: 
-- Enables quick content creation without opening Airtable
-- Creates draft records ready for refinement
-
----
-
 ## AI-Agenter
 
 | Agent | Modell | Roll | Workflow |
 |-------|--------|------|----------|
-| **News Analyser** | OpenAI/Claude | Gatekeeper. Filtrerar brus. | WF-4.1 |
-| **Content Writer** | Claude Sonnet | Kreativ strateg. Story First. | WF-4.2 |
-| **Image Generator** | Gemini | Visuell skapare. Metaforiska bilder. | WF-4.2 |
-| **Strategy Analyst** | GPT-4o | Datadriven chefredaktör. | WF-4.3 |
-| **Writing Coach** | Claude/OpenAI | Pedagog. Analyserar ändringar. | WF-4.3 |
-| **Insight Gatherer** | Claude Sonnet | Interviewer. Lockar fram personliga perspektiv och erfarenheter via strukturerad Q&A. | WF-4.4 |
+| **News Analyser** | OpenAI/Claude | Gatekeeper. Filtrerar brus. | CE-1.0 |
+| **Content Writer** | Claude Sonnet | Kreativ strateg. Story First. | CE-3.0 |
+| **Image Generator** | Gemini | Visuell skapare. Metaforiska bilder. | CE-3.0 |
+| **Strategy Analyst** | GPT-4o | Datadriven chefredaktör. | CE-4.1 |
+| **Writing Coach** | Claude/OpenAI | Pedagog. Analyserar ändringar. | CE-5.0 |
+| **Insight Gatherer** | Claude Sonnet | Interviewer. Lockar fram personliga perspektiv och erfarenheter via strukturerad Q&A. | CE-2.1 |
 
 ---
 
@@ -351,19 +372,19 @@ Confirm in Slack
 ### Planerade Features (Ej ännu implementerade)
 
 #### Workflows
-- **B-4**: Conversational Engine ("Intellektuell Sparringpartner")
+- **B-4**: CE-6.0 - Conversational Engine ("Intellektuell Sparringpartner")
   - **Agent**: Sparring Partner
-  - **Status**: Planerad (separat från WF-4.4 Interview)
+  - **Status**: Planerad (separat från CE-2.x Interview)
   - **Beskrivning**: Interaktiv AI-partner för textbaserad fördjupning i Slack, fokuserad på idéutveckling snarare än insiktsextraktion
   - **Notera**: Eventuell status 💬 Bollplank för att skilja från Interview
 
-- **B-5**: WF-4.5 - Insight Extraction Engine (Async Voice)
+- **B-5**: CE-2.2 - Insight Extraction Engine (Async Voice)
   - **Agent**: The Interviewer
   - **Status**: Planerad men inte implementerad
   - **Beskrivning**: Röst-loop via Slack (#content-ideas) för snabba idéer
   - **Notera**: Status 🧠 Insight Processing var planerad för denna workflow
 
-- **B-6**: WF-4.6 - Real-time Voice Interface ("Qyrios Partner")
+- **B-6**: CE-2.3 - Real-time Voice Interface ("Qyrios Partner")
   - **Agent**: Custom GPT Integration
   - **Status**: Planerad men inte implementerad
   - **Beskrivning**: Realtids röstkonversation via Custom GPT för djupa, utforskande samtal
@@ -379,7 +400,7 @@ Confirm in Slack
 
 - **B-9**: Chat Sessions - Tabell för att logga konversationssessioner
   - **Fält**: SessionID (Autonumber), Content Link (Link), Slack Thread ID (Text), Status (Single Select: Open/Closed), Full Transcript (Long text)
-  - **Används av**: Insight Gatherer (WF-4.4), Sparring Partner (B-4)
+  - **Används av**: Insight Gatherer (CE-2.1), Sparring Partner (B-4)
   - **Status**: Planerad men inte implementerad
 
 ---
@@ -404,14 +425,17 @@ Confirm in Slack
 **Verifierad mot**: n8n workflows med tag "Content Production"
 
 ### Verifierade Workflows
-- ✅ WF-4.1: News Editor (n8n: "CE: News Editor (WF-4.1)")
-- ✅ WF-4.2: Content Production (n8n: "CE: Content Production (WF-4.2)")
-- ✅ WF-4.3.1: Content Coach (n8n: "CE: Content Coach (WF-4.3.1)")
-- ✅ WF-4.3.2: Performance Analyser (n8n: "CE: Performance Analyser (WF-4.3.2)")
-- ✅ WF-4.3.3: LinkedIn Performance Retriever (n8n: "CE: LinkedIn Performance Retriever (WF-4.3.3)")
-- ✅ WF-4.4: User Interview (n8n: "CE: User Interview (WF-4.4)")
-- ✅ WF-4.4b: Interview Chat (n8n: "CE: Interview Chat (WF-4.4b)")
-- ✅ WF-4.7: LinkedIn Historical Posts Backfill (n8n: "CE: LinkedIn Historical Posts Backfill (WF-4.7)")
-- ✅ WF-4.8: Create Draft from Slack (n8n: "CE: Create Draft from Slack (WF-4.8)")
 
-**Notera**: Alla workflows är aktiva och tillhör projektet "Qyrios Agents" (tidigare "Qyrios Testing Ground").
+| Kod | n8n Namn | n8n ID | Status |
+|-----|----------|--------|--------|
+| CE-1.0 | CE-1.0: News Editor | `xhrCoul7OWH796Kb` | ✅ Aktiv |
+| CE-1.1 | CE-1.1: Quick Draft | `QhTdveZN836tTp3W` | ✅ Aktiv |
+| CE-2.0 | CE-2.0: Interview Trigger | `0uivucNHZe4cXtxT` | ✅ Aktiv |
+| CE-2.1 | CE-2.1: Interview Chat | `MH2X99khIhTvTa1R` | ✅ Aktiv |
+| CE-3.0 | CE-3.0: Content Production | `QT0qhhlrHwdW0Qc6` | ✅ Aktiv |
+| CE-4.0 | CE-4.0: Performance Retriever | `QjdBaF25Bxnz1ulQ` | ✅ Aktiv |
+| CE-4.1 | CE-4.1: Performance Analyser | `L69usft0w47kmOem` | ✅ Aktiv |
+| CE-5.0 | CE-5.0: Content Coach | `B7VQMNvOXmeaf6Gx` | ✅ Aktiv |
+| CE-9.0 | CE-9.0: LinkedIn Backfill | `MSATKEg7V1JqySb0` | ⏸️ Inaktiv (utility) |
+
+**Notera**: Alla workflows tillhör projektet "Qyrios Agents".
