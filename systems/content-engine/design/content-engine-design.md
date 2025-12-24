@@ -81,7 +81,8 @@ Att producera relevant och engagerande innehåll på en konsekvent basis är tid
 #### Gränssnitt
 
 - **Slack**: Notifikationer, röstmeddelanden, textbaserad dialog
-- **ChatGPT Custom GPT**: Realtids röstkonversation ("Qyrios Partner")
+- **GitHub Pages**: Custom chat-gränssnitt för intervjuer (WF-4.4)
+- **ChatGPT Custom GPT**: Realtids röstkonversation ("Qyrios Partner") - planerad
 
 #### Data & Verktyg
 
@@ -350,11 +351,11 @@ Confirm in Slack
 ### Planerade Features (Ej ännu implementerade)
 
 #### Workflows
-- **B-4**: WF-4.4 (Old) - Conversational Engine ("Intellektuell Sparringpartner")
+- **B-4**: Conversational Engine ("Intellektuell Sparringpartner")
   - **Agent**: Sparring Partner
-  - **Status**: Planerad men inte implementerad
-  - **Beskrivning**: Interaktiv AI-partner för textbaserad fördjupning i Slack
-  - **Notera**: Status 💬 Bollplank var planerad för denna workflow
+  - **Status**: Planerad (separat från WF-4.4 Interview)
+  - **Beskrivning**: Interaktiv AI-partner för textbaserad fördjupning i Slack, fokuserad på idéutveckling snarare än insiktsextraktion
+  - **Notera**: Eventuell status 💬 Bollplank för att skilja från Interview
 
 - **B-5**: WF-4.5 - Insight Extraction Engine (Async Voice)
   - **Agent**: The Interviewer
@@ -399,7 +400,7 @@ Confirm in Slack
 
 ## Verifiering & Uppdateringar
 
-**Verifierad**: 2025-11-29  
+**Verifierad**: 2025-12-24  
 **Verifierad mot**: n8n workflows med tag "Content Production"
 
 ### Verifierade Workflows
