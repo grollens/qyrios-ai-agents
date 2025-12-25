@@ -62,56 +62,55 @@ Master list of all N8N workflows in the Qyrios system.
 
 ## Relationship Cultivator Workflows
 
-### Automated Prospect Research (WF-4.1)
+> **Namnkonvention**: `RC-X.Y` där X = fas och Y = workflow inom fasen.
+> Faser: 1=Lead Input, 2=Research, 3=Engagement, 4=Logging, 5=Learning, 9=Utility
+
+### RC-1.0: Warm Leads
 - **Status**: Production
-- **Location**: `systems/relationship-cultivator/workflows/`
-- **Design**: [Design Document](../systems/relationship-cultivator/design/relationship-cultivator-design.md#52-workflow-automated-prospect-research--analysis-wf-41)
+- **n8n ID**: `s2agbztlFTqsF2dd`
+- **Agent**: Lead Identifier
+- **Dependencies**: Apify, Relationship Database (ContentLeads, ContentEngagement tables)
+
+### RC-2.0: Contact Research
+- **Status**: Production
+- **n8n ID**: `IGL91FZ3hm95CzkG`
+- **Agent**: Research Analyst
 - **Dependencies**: Relationship Database (Contacts, ContactResearch tables)
 
-### AI-Powered Meeting Briefing (WF-4.2)
+### RC-2.1: Meeting Briefing
 - **Status**: Production
-- **Location**: `systems/relationship-cultivator/workflows/`
-- **Design**: [Design Document](../systems/relationship-cultivator/design/relationship-cultivator-design.md#53-workflow-ai-powered-meeting-briefing-wf-42)
+- **n8n ID**: `N5xR3TUqobZmSDqS`
+- **Agent**: Meeting Preparer
 - **Dependencies**: Relationship Database (Contacts, LoggedInteractions tables)
 
-### Manual Post-Interaction Logging (WF-4.3)
+### RC-3.0: Comment Suggester
 - **Status**: Production
-- **Location**: `systems/relationship-cultivator/workflows/`
-- **Dependencies**: Relationship Database (Contacts, LoggedInteractions tables)
-
-### Unified Proactive Engagement (WF-5.5)
-- **Status**: Production
-- **Location**: `systems/relationship-cultivator/workflows/`
-- **Design**: [Design Document](../systems/relationship-cultivator/design/relationship-cultivator-design.md#55-workflow-unified-proactive-engagement-consolidated)
+- **n8n ID**: `wEaqb1Z7E47oR4Wt`
+- **Agent**: Engagement Strategist
 - **Dependencies**: Relationship Database (Contacts, MessageSuggestions tables)
 
-### Opportunity Management (WF-4.5)
+### RC-3.1: Quick Briefing
 - **Status**: Production
-- **Location**: `systems/relationship-cultivator/workflows/`
-- **Dependencies**: Relationship Database (Opportunities table)
-
-### 3-Bullet Briefing (WF-4.7)
-- **Status**: Production
-- **Location**: `systems/relationship-cultivator/workflows/`
+- **n8n ID**: `PrhnuR5BURIrz8si`
 - **Dependencies**: Relationship Database (Contacts, LoggedInteractions tables)
 
-### Automatic Logging (WF-4.8)
+### RC-4.0: Interaction Logger
 - **Status**: Production
-- **Location**: `systems/relationship-cultivator/workflows/`
-- **Design**: [Design Document](../systems/relationship-cultivator/design/relationship-cultivator-design.md#59-workflow-automatic-logging-wf-48)
+- **n8n ID**: `OgtZQeQ4JC2yqkVz`
+- **Agent**: Interaction Summarizer
 - **Dependencies**: Relationship Database (Contacts, LoggedInteractions tables), Microsoft Outlook
 
-### Message Coach (WF-4.9)
+### RC-5.0: Message Coach
 - **Status**: Production
-- **Location**: `systems/relationship-cultivator/workflows/`
-- **Design**: [Design Document](../systems/relationship-cultivator/design/relationship-cultivator-design.md#510-workflow-message-coach-wf-49)
+- **n8n ID**: `jrzXYijrXp43yyyh`
+- **Agent**: Message Coach
 - **Dependencies**: Relationship Database (MessageSuggestions, Configuration tables)
 
-### Warm Leads from LinkedIn (WF-4.10)
-- **Status**: Production
-- **Location**: `systems/relationship-cultivator/workflows/`
-- **Design**: [Design Document](../systems/relationship-cultivator/design/relationship-cultivator-design.md#511-workflow-warm-leads-from-linkedin-wf-410)
-- **Dependencies**: Relationship Database (ContentLeads, ContentEngagement tables), Apify
+### RC-9.0: Message Writer
+- **Status**: Production (Utility - inactive)
+- **n8n ID**: `x2h6E15ZPmjDTADC`
+- **Agent**: Pipeline Analyst
+- **Dependencies**: Relationship Database (Opportunities table)
 
 ---
 
@@ -181,8 +180,8 @@ Master list of all N8N workflows in the Qyrios system.
 | System | Prefix | ID Format | Notes |
 |--------|--------|-----------|-------|
 | Content Engine | CE | CE-X.Y | X=fas (1-5,9), Y=workflow |
-| Relationship Cultivator | RC | WF-4.x, WF-5.5 | Legacy naming (att migrera) |
-| Competitive Intelligence | CI | WF-5.x | Proposed workflows |
+| Relationship Cultivator | RC | RC-X.Y | X=fas (1-5,9), Y=workflow |
+| Competitive Intelligence | CI | CI-X.Y | Att migrera |
 
 ---
 
